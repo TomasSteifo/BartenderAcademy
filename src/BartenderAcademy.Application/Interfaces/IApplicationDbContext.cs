@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using BartenderAcademy.Domain.Entities;
@@ -6,19 +5,22 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BartenderAcademy.Application.Interfaces
 {
-    /// <summary>
-    /// Abstraction for the EF Core DbContext. Implemented in Infrastructure.
-    /// </summary>
     public interface IApplicationDbContext
     {
-        // DbSet for Category entity
         DbSet<Category> Categories { get; }
-
-        // (Later, add DbSet<Course>, DbSet<Lesson>, etc.)
+        DbSet<Course> Courses { get; }
+        DbSet<Lesson> Lessons { get; }
+        DbSet<Enrollment> Enrollments { get; }
+        DbSet<Progress> Progress { get; }
+        DbSet<Quiz> Quiz { get; }
+        DbSet<QuizQuestion> QuizQuestions { get; }
+        DbSet<QuizOption> QuizOptions { get; }
 
         /// <summary>
-        /// Saves changes to the database.
+        /// Allows repository to access any DbSet&lt;T&gt;.
         /// </summary>
+        DbSet<T> Set<T>() where T : class;
+
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }
 }
