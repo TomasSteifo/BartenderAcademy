@@ -1,0 +1,48 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{C5BFE691-7B93-4217-A8C9-4958C87D0716}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BartenderAcademy.Domain", "src\BartenderAcademy.Domain\BartenderAcademy.Domain.csproj", "{D47A1C56-8468-4530-B5E1-2A0E3E22E9C0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BartenderAcademy.Application", "src\BartenderAcademy.Application\BartenderAcademy.Application.csproj", "{7479BAB9-7F9C-4576-A86D-FD3955DC8C17}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BartenderAcademy.API", "src\BartenderAcademy.API\BartenderAcademy.API.csproj", "{D08A3E66-0EE6-4D7E-9017-17D670275721}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BartenderAcademy.Infrastructure", "src\BartenderAcademy.Infrastructure\BartenderAcademy.Infrastructure.csproj", "{0990498D-173A-428F-BCFC-99101C5D9114}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D47A1C56-8468-4530-B5E1-2A0E3E22E9C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D47A1C56-8468-4530-B5E1-2A0E3E22E9C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D47A1C56-8468-4530-B5E1-2A0E3E22E9C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D47A1C56-8468-4530-B5E1-2A0E3E22E9C0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7479BAB9-7F9C-4576-A86D-FD3955DC8C17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7479BAB9-7F9C-4576-A86D-FD3955DC8C17}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7479BAB9-7F9C-4576-A86D-FD3955DC8C17}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7479BAB9-7F9C-4576-A86D-FD3955DC8C17}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D08A3E66-0EE6-4D7E-9017-17D670275721}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D08A3E66-0EE6-4D7E-9017-17D670275721}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D08A3E66-0EE6-4D7E-9017-17D670275721}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D08A3E66-0EE6-4D7E-9017-17D670275721}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0990498D-173A-428F-BCFC-99101C5D9114}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0990498D-173A-428F-BCFC-99101C5D9114}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0990498D-173A-428F-BCFC-99101C5D9114}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0990498D-173A-428F-BCFC-99101C5D9114}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D47A1C56-8468-4530-B5E1-2A0E3E22E9C0} = {C5BFE691-7B93-4217-A8C9-4958C87D0716}
+		{7479BAB9-7F9C-4576-A86D-FD3955DC8C17} = {C5BFE691-7B93-4217-A8C9-4958C87D0716}
+		{D08A3E66-0EE6-4D7E-9017-17D670275721} = {C5BFE691-7B93-4217-A8C9-4958C87D0716}
+		{0990498D-173A-428F-BCFC-99101C5D9114} = {C5BFE691-7B93-4217-A8C9-4958C87D0716}
+	EndGlobalSection
+EndGlobal
