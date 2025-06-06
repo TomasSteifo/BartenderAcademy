@@ -1,6 +1,8 @@
-using BartenderAcademy.Application.Behaviors;
+Ôªøusing BartenderAcademy.Application.Behaviors;
 using BartenderAcademy.Application.Interfaces;
+using BartenderAcademy.Application.Interfaces.Repositories;   // ‚Üê add this
 using BartenderAcademy.Infrastructure.Persistence;
+using BartenderAcademy.Infrastructure.Repositories;         // ‚Üê add this
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -11,7 +13,6 @@ using Microsoft.Extensions.Hosting;
 using BartenderAcademy.API.Services;
 using Microsoft.AspNetCore.Http;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -20,7 +21,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// 1. Register MediatR (v11 style).  We use ICurrentUserService as the ìanchorî type
+// 1. Register MediatR (v11 style). We use ICurrentUserService as the ‚Äúanchor‚Äù type
 builder.Services.AddMediatR(typeof(ICurrentUserService).Assembly);
 
 // 2. Register all FluentValidation validators from the Application assembly
@@ -34,13 +35,16 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
 // 4. Register EF Core DbContext as IApplicationDbContext
-//    (reads ìDefaultConnectionî from appsettings.json)
+//    (reads ‚ÄúDefaultConnection‚Äù from appsettings.json)
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 //    Make IApplicationDbContext resolve to the same ApplicationDbContext
 builder.Services.AddScoped<IApplicationDbContext>(provider =>
     provider.GetRequiredService<ApplicationDbContext>());
+
+// 5. Register the generic repository
+builder.Services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
 
 var app = builder.Build();
 
