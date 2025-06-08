@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using BartenderAcademy.Application.Commands.CourseCommands;
-using BartenderAcademy.Application.Common;
 using BartenderAcademy.Application.DTOs;
 using BartenderAcademy.Application.Queries.CourseQueries;
 using MediatR;
@@ -25,14 +24,13 @@ namespace BartenderAcademy.API.Controllers
         /// Creates a new Course.
         /// </summary>
         [HttpPost]
-        public async Task<ActionResult<OperationResult<CourseDto>>> Create([FromBody] CreateCourseCommand command)
+        public async Task<ActionResult<CourseDto>> Create([FromBody] CreateCourseCommand command)
         {
             if (command == null)
-                return BadRequest(OperationResult<CourseDto>.Fail("Request body is null."));
+                return BadRequest("Request body is null.");
 
             var created = await _mediator.Send(command);
-            var result = OperationResult<CourseDto>.Ok(created, "Course created successfully.");
-            return CreatedAtAction(nameof(GetById), new { id = created.Id }, result);
+            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
         /// <summary>
@@ -40,10 +38,10 @@ namespace BartenderAcademy.API.Controllers
         /// Returns all courses.
         /// </summary>
         [HttpGet]
-        public async Task<ActionResult<OperationResult<IEnumerable<CourseDto>>>> GetAll()
+        public async Task<ActionResult<IEnumerable<CourseDto>>> GetAll()
         {
             var courses = await _mediator.Send(new GetAllCoursesQuery());
-            return Ok(OperationResult<IEnumerable<CourseDto>>.Ok(courses));
+            return Ok(courses);
         }
 
         /// <summary>
@@ -51,16 +49,16 @@ namespace BartenderAcademy.API.Controllers
         /// Returns a single course by ID.
         /// </summary>
         [HttpGet("{id}")]
-        public async Task<ActionResult<OperationResult<CourseDto>>> GetById(int id)
+        public async Task<ActionResult<CourseDto>> GetById(int id)
         {
             if (id <= 0)
-                return BadRequest(OperationResult<CourseDto>.Fail("ID must be greater than zero."));
+                return BadRequest("ID must be greater than zero.");
 
             var course = await _mediator.Send(new GetCourseByIdQuery(id));
             if (course == null)
-                return NotFound(OperationResult<CourseDto>.Fail($"Course with ID {id} not found."));
+                return NotFound($"Course with ID {id} not found.");
 
-            return Ok(OperationResult<CourseDto>.Ok(course));
+            return Ok(course);
         }
 
         /// <summary>
@@ -68,16 +66,16 @@ namespace BartenderAcademy.API.Controllers
         /// Updates an existing course.
         /// </summary>
         [HttpPut("{id}")]
-        public async Task<ActionResult<OperationResult<CourseDto>>> Update(int id, [FromBody] UpdateCourseCommand command)
+        public async Task<ActionResult<CourseDto>> Update(int id, [FromBody] UpdateCourseCommand command)
         {
             if (command == null || id != command.Id)
-                return BadRequest(OperationResult<CourseDto>.Fail("ID mismatch or request body is null."));
+                return BadRequest("ID mismatch or request body is null.");
 
             var updated = await _mediator.Send(command);
             if (updated == null)
-                return NotFound(OperationResult<CourseDto>.Fail($"Course with ID {id} not found."));
+                return NotFound($"Course with ID {id} not found.");
 
-            return Ok(OperationResult<CourseDto>.Ok(updated, "Course updated successfully."));
+            return Ok(updated);
         }
 
         /// <summary>
@@ -85,16 +83,16 @@ namespace BartenderAcademy.API.Controllers
         /// Deletes a course.
         /// </summary>
         [HttpDelete("{id}")]
-        public async Task<ActionResult<OperationResult<bool>>> Delete(int id)
+        public async Task<ActionResult<bool>> Delete(int id)
         {
             if (id <= 0)
-                return BadRequest(OperationResult<bool>.Fail("ID must be greater than zero."));
+                return BadRequest("ID must be greater than zero.");
 
             var success = await _mediator.Send(new DeleteCourseCommand { Id = id });
             if (!success)
-                return NotFound(OperationResult<bool>.Fail($"Course with ID {id} not found."));
+                return NotFound($"Course with ID {id} not found.");
 
-            return Ok(OperationResult<bool>.Ok(true, "Course deleted successfully."));
+            return Ok(true);
         }
     }
 }
