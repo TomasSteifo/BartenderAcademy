@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using BartenderAcademy.Application.Commands.LessonCommands;
-using BartenderAcademy.Application.Common;
 using BartenderAcademy.Application.DTOs;
 using BartenderAcademy.Application.Queries.LessonQueries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BartenderAcademy.API.Controllers
 {
@@ -25,14 +25,13 @@ namespace BartenderAcademy.API.Controllers
         /// Creates a new Lesson.
         /// </summary>
         [HttpPost]
-        public async Task<ActionResult<OperationResult<LessonDto>>> Create([FromBody] CreateLessonCommand command)
+        public async Task<ActionResult<LessonDto>> Create([FromBody] CreateLessonCommand command)
         {
             if (command == null)
-                return BadRequest(OperationResult<LessonDto>.Fail("Request body is null."));
+                return BadRequest();
 
             var created = await _mediator.Send(command);
-            var result = OperationResult<LessonDto>.Ok(created, "Lesson created successfully.");
-            return CreatedAtAction(nameof(GetById), new { id = created.Id }, result);
+            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
         /// <summary>
@@ -40,13 +39,13 @@ namespace BartenderAcademy.API.Controllers
         /// Returns all lessons for a given course.
         /// </summary>
         [HttpGet("course/{courseId}")]
-        public async Task<ActionResult<OperationResult<IEnumerable<LessonDto>>>> GetByCourse(int courseId)
+        public async Task<ActionResult<IEnumerable<LessonDto>>> GetByCourse(int courseId)
         {
             if (courseId <= 0)
-                return BadRequest(OperationResult<IEnumerable<LessonDto>>.Fail("CourseId must be greater than zero."));
+                return BadRequest();
 
             var lessons = await _mediator.Send(new GetLessonsByCourseQuery(courseId));
-            return Ok(OperationResult<IEnumerable<LessonDto>>.Ok(lessons));
+            return Ok(lessons);
         }
 
         /// <summary>
@@ -54,16 +53,16 @@ namespace BartenderAcademy.API.Controllers
         /// Returns a single lesson by ID.
         /// </summary>
         [HttpGet("{id}")]
-        public async Task<ActionResult<OperationResult<LessonDto>>> GetById(int id)
+        public async Task<ActionResult<LessonDto>> GetById(int id)
         {
             if (id <= 0)
-                return BadRequest(OperationResult<LessonDto>.Fail("ID must be greater than zero."));
+                return BadRequest();
 
             var lesson = await _mediator.Send(new GetLessonByIdQuery(id));
             if (lesson == null)
-                return NotFound(OperationResult<LessonDto>.Fail($"Lesson with ID {id} not found."));
+                return NotFound();
 
-            return Ok(OperationResult<LessonDto>.Ok(lesson));
+            return Ok(lesson);
         }
 
         /// <summary>
@@ -71,16 +70,16 @@ namespace BartenderAcademy.API.Controllers
         /// Updates an existing lesson.
         /// </summary>
         [HttpPut("{id}")]
-        public async Task<ActionResult<OperationResult<LessonDto>>> Update(int id, [FromBody] UpdateLessonCommand command)
+        public async Task<ActionResult<LessonDto>> Update(int id, [FromBody] UpdateLessonCommand command)
         {
             if (command == null || id != command.Id)
-                return BadRequest(OperationResult<LessonDto>.Fail("ID mismatch or request body is null."));
+                return BadRequest();
 
             var updated = await _mediator.Send(command);
             if (updated == null)
-                return NotFound(OperationResult<LessonDto>.Fail($"Lesson with ID {id} not found."));
+                return NotFound();
 
-            return Ok(OperationResult<LessonDto>.Ok(updated, "Lesson updated successfully."));
+            return Ok(updated);
         }
 
         /// <summary>
@@ -88,16 +87,16 @@ namespace BartenderAcademy.API.Controllers
         /// Deletes a lesson.
         /// </summary>
         [HttpDelete("{id}")]
-        public async Task<ActionResult<OperationResult<bool>>> Delete(int id)
+        public async Task<ActionResult<bool>> Delete(int id)
         {
             if (id <= 0)
-                return BadRequest(OperationResult<bool>.Fail("ID must be greater than zero."));
+                return BadRequest();
 
             var success = await _mediator.Send(new DeleteLessonCommand { Id = id });
             if (!success)
-                return NotFound(OperationResult<bool>.Fail($"Lesson with ID {id} not found."));
+                return NotFound();
 
-            return Ok(OperationResult<bool>.Ok(true, "Lesson deleted successfully."));
+            return Ok(true);
         }
     }
 }

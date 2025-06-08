@@ -2,59 +2,54 @@
 using System.Threading.Tasks;
 using BartenderAcademy.Application.Interfaces;
 using BartenderAcademy.Domain.Entities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace BartenderAcademy.Infrastructure.Persistence
 {
-    public class ApplicationDbContext : DbContext, IApplicationDbContext
+    public class ApplicationDbContext
+        : IdentityDbContext<IdentityUser>, IApplicationDbContext
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
         }
 
-        // 1. Implement every DbSet<T> defined in IApplicationDbContext:
+        // --- your DbSets for domain entities ---
         public DbSet<Category> Categories { get; set; } = null!;
-        public DbSet<Course> Courses { get; set; } = null!;         // Maps to "Course" table
-        public DbSet<Lesson> Lessons { get; set; } = null!;         // Maps to "Lesson" table
+        public DbSet<Course> Courses { get; set; } = null!;
+        public DbSet<Lesson> Lessons { get; set; } = null!;
         public DbSet<Enrollment> Enrollments { get; set; } = null!;
         public DbSet<Progress> Progress { get; set; } = null!;
         public DbSet<Quiz> Quiz { get; set; } = null!;
         public DbSet<QuizQuestion> QuizQuestions { get; set; } = null!;
         public DbSet<QuizOption> QuizOptions { get; set; } = null!;
 
-        // 2. Override SaveChangesAsync
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-        {
-            return base.SaveChangesAsync(cancellationToken);
-        }
+            => base.SaveChangesAsync(cancellationToken);
 
-        // 3. Override Set<T>()
-        public override DbSet<T> Set<T>() where T : class
-        {
-            return base.Set<T>();
-        }
+        // Remove the public override of Set<T>() entirely.
+        // Instead explicitly implement the interface:
+        DbSet<T> IApplicationDbContext.Set<T>() where T : class
+            => base.Set<T>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);
+            base.OnModelCreating(modelBuilder); // Identity tables
 
-            // ————————————————
-            // Add these explicit mappings so EF uses the singular table names:
+            // singular table mappings & precision settings…
             modelBuilder.Entity<Course>().ToTable("Course");
             modelBuilder.Entity<Lesson>().ToTable("Lesson");
-            // (If your other tables are named singularly, map them here as well,
-            //  e.g. modelBuilder.Entity<Enrollment>().ToTable("Enrollment"); etc.)
-            // ————————————————
+            modelBuilder.Entity<Enrollment>().ToTable("Enrollment");
+            modelBuilder.Entity<QuizQuestion>().ToTable("QuizQuestion");
+            modelBuilder.Entity<QuizOption>().ToTable("QuizOption");
 
-            // Preserve your existing precision settings:
-            modelBuilder
-                .Entity<Enrollment>()
+            modelBuilder.Entity<Enrollment>()
                 .Property(e => e.ProgressPercentage)
                 .HasPrecision(5, 2);
 
-            modelBuilder
-                .Entity<Progress>()
+            modelBuilder.Entity<Progress>()
                 .Property(p => p.QuizScore)
                 .HasPrecision(5, 2);
         }
