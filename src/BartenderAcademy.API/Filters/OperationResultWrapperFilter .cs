@@ -14,26 +14,43 @@ namespace BartenderAcademy.API.Filters
     {
         public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
         {
-            // If the action already returned an OperationResult, do nothing.
-            if (context.Result is ObjectResult { Value: IOperationResult _ })
+            // If it’s already an OperationResult<>, do nothing:
+            if (context.Result is ObjectResult objectResult
+                && objectResult.Value != null
+                && objectResult.Value.GetType().IsGenericType
+                && objectResult.Value.GetType().GetGenericTypeDefinition() == typeof(OperationResult<>))
             {
                 await next();
                 return;
             }
 
             // Only wrap ObjectResult (i.e. return data); skip other results (e.g., StatusCodeResult).
-            if (context.Result is ObjectResult objectResult)
+            if (context.Result is ObjectResult resultToWrap)
             {
-                var data = objectResult.Value;
-                var wrappedType = typeof(OperationResult<>).MakeGenericType(data?.GetType() ?? typeof(object));
-                var okMethod = wrappedType.GetMethod(nameof(OperationResult<object>.Ok), new[] { data?.GetType() ?? typeof(object), typeof(string) });
+                var data = resultToWrap.Value;
+                var dataType = data?.GetType() ?? typeof(object);
 
-                // Invoke OperationResult<T>.Ok(data, message) with empty message
-                var wrapped = okMethod?.Invoke(null, new[] { data, string.Empty });
+                var wrappedType = typeof(OperationResult<>)
+                                  .MakeGenericType(dataType);
+
+                var okMethod = wrappedType.GetMethod(
+                    nameof(OperationResult<object>.Ok),
+                    new[] { dataType, typeof(string) });
+
+                if (okMethod is null)
+                {
+                    throw new InvalidOperationException(
+                        $"Could not find static Ok({dataType.Name}, string) method on {wrappedType.Name}");
+                }
+
+                // We know okMethod and data aren’t null here
+                var wrapped = okMethod.Invoke(
+                    null,
+                    new object[] { data!, string.Empty })!;
 
                 context.Result = new ObjectResult(wrapped)
                 {
-                    StatusCode = objectResult.StatusCode ?? 200
+                    StatusCode = resultToWrap.StatusCode ?? 200
                 };
             }
 
